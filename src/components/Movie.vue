@@ -2,40 +2,46 @@
   <div>
     <div class="border-b border-gray-600">
       <div class="flex container mx-auto mt-20 pb-5">
-        <img
-          src="https://www.themoviedb.org/t/p/w220_and_h330_face/9dKCd55IuTT5QRs989m9Qlb7d2B.jpg"
-          alt="movie"
-          class="w-64"
-        />
+        <img :src="posterPath" alt="movie" class="w-64" />
         <div class="ml-24">
-          <h1 class="text-4xl font-semibold">Jumanji</h1>
+          <h1 class="text-4xl font-semibold">{{ movie.title }}</h1>
           <span class="flex text-sm text-gray-500 mt-5">
             <i class="fas fa-star text-yellow-500"></i>
-            <span class="ml-3">47% | 2020-10-01</span> <br />
+            <span class="ml-3 mr-3"
+              >{{ movie.vote_average * 10 }}% | {{ movie.release_date }}</span
+            >
+            <br />
 
-            <span class="text-sm text-gray-500">Drama | Fiction Advanture</span>
+            <span
+              v-for="(item, index) in movie.genres"
+              :key="index"
+              class="text-sm text-gray-500 ml-1"
+              >{{ item.name }}
+              <span v-if="movie.genres.length - 1 != index">,</span></span
+            >
           </span>
 
           <p class="mt-5">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit soluta
-            eos incidunt exercitationem minima id.
+            {{ movie.overview }}
           </p>
           <div class="mt-5">
             <br />
             <span class="mt-5 font-semibold">Featured Cast</span>
             <div class="flex">
-              <div class="flex flex-col mt-5 mr-5">
-                <span>Scott Sliver Writer</span>
-                <span class="text-gray-500">Writer</span>
-              </div>
-              <div class="flex flex-col mt-5">
-                <span>Bruce Berman</span>
-                <span class="text-gray-500">Executive Producer</span>
+              <div v-for="(crew, index) in crews" :key="index">
+                <div v-if="index < 2" class="flex flex-col mt-5 mr-5">
+                  <span>{{ crew.name }}</span>
+                  <span class="text-gray-500">{{ crew.job }}</span>
+                </div>
               </div>
             </div>
           </div>
           <div class="mt-5 text-black font-bold">
-            <a href="#" class="rounded bg-yellow-500 px-5 py-4">
+            <a
+              :href="youtubeVideo"
+              target="_blank"
+              class="rounded bg-yellow-500 px-5 py-4"
+            >
               <i class="far fa-play-circle mr-1"></i>
               Play Trailer
             </a>
@@ -48,18 +54,65 @@
       </div>
     </div>
     <Cast />
-    <Images/>
+    <Images />
   </div>
 </template>
 
 <script>
 import Cast from "./Cast.vue";
 import Images from "./Images.vue";
+import axios from "axios";
 export default {
   name: "Movie",
+  data() {
+    return {
+      movie: [],
+      crews: [],
+      videos: [],
+    };
+  },
   components: {
     Cast,
-    Images
+    Images,
+  },
+  mounted() {
+    this.fetchMovie(this.$route.params.id);
+    this.creditMovie(this.$route.params.id);
+    this.trailerMovie(this.$route.params.id);
+  },
+  methods: {
+    async fetchMovie(movieId) {
+      await axios
+        .get(
+          `https://api.themoviedb.org/3/movie/${movieId}?api_key=d9a58f68b032567df17dbf974fe13148`
+        )
+        .then((response) => (this.movie = response.data))
+        .catch((err) => console.log(err));
+    },
+    async creditMovie(movieId) {
+      await axios
+        .get(
+          `https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=d9a58f68b032567df17dbf974fe13148`
+        )
+        .then((response) => (this.crews = response.data.crew))
+        .catch((err) => console.log(err));
+    },
+    async trailerMovie(movieId) {
+      await axios
+        .get(
+          `https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=d9a58f68b032567df17dbf974fe13148`
+        )
+        .then((response) => (this.videos = response.data.results[0]))
+        .catch((err) => console.log(err));
+    },
+  },
+  computed: {
+    posterPath() {
+      return "https://image.tmdb.org/t/p/w500" + this.movie.poster_path;
+    },
+    youtubeVideo() {
+      return "https://www.youtube.com/embed/" + this.videos?.key;
+    },
   },
 };
 </script>

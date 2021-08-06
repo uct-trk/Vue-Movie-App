@@ -1,6 +1,6 @@
 <template>
   <div class="w-64">
-    <router-link class="overflow-hidden" to="/movie/11">
+    <router-link class="overflow-hidden" :to="`/movie/${movie.id}`">
       <img
         :src="posterPath"
         alt=""
