@@ -4,19 +4,26 @@
       type="text"
       class="rounded-full bg-gray-600 px-7 outline-none w-64 h-12 mb-5 mr-5"
       placeholder="Search.."
+      @input="debounceSearch"
+      v-model="searchTerm"
     />
     <div class="absolute top-2 left-0">
       <i class="fas fa-search mt-3 ml-2 text-gray-300"></i>
     </div>
-    <div v-if="false" class="absolute mt-14 ml-2 rounded bg-gray-600 w-60">
+    <div class="absolute mt-14 ml-2 rounded bg-gray-600 w-60">
+      <ul v-if="searchResult.length != 1">
+        <li
+          v-for="(movie, index) in searchResult"
+          :key="index"
+          class="flex items-center border-b border-gray-500"
+        >
+          <img :src="posterPath(movie.poster_path)" alt="" class="w-10" />
+          <span class="ml-3">{{ movie.title }}</span>
+        </li>
+      </ul>
       <ul>
-        <li class="flex items-center border-b border-gray-500">
-          <img
-            src="https://www.themoviedb.org/t/p/w130_and_h195_bestv2/r3z70vunihrAkjILQKWHX0G2xzO.jpg"
-            alt=""
-            class="w-10"
-          />
-          <span class="ml-3">Breaking Bad</span>
+        <li v-if="noResultFound" class="text-center py-2 font-bold">
+          No Result found for "{{ searchTerm }}"
         </li>
       </ul>
     </div>
@@ -25,7 +32,48 @@
 </template>
 
 <script>
-export default {};
+import axios from "axios";
+export default {
+  data() {
+    return {
+      searchResult: [],
+      noResultFound: false,
+      searchTerm: "",
+    };
+  },
+  mounted() {
+    this.fetchSearch();
+  },
+  methods: {
+    debounceSearch(event) {
+      clearTimeout(this.debounce);
+      this.debounce = setTimeout(() => {
+        if (event.target.value.length > 2) {
+          this.fetchSearch(event.target.value);
+        }
+      }, 600);
+    },
+    async fetchSearch(term) {
+      await axios
+        .get(
+          `https://api.themoviedb.org/3/search/movie?api_key=d9a58f68b032567df17dbf974fe13148&query=${term}`
+        )
+        .then((response) => (this.searchResult = response.data.results))
+        .catch((err) => console.log(err));
+        this.noResultFound = this.searchResult ? true : false
+
+      console.log(this.noResultFound);
+      console.log(this.searchResult);
+    },
+    posterPath(poster_path) {
+      if (poster_path) {
+        return "https://image.tmdb.org/t/p/w500" + poster_path;
+      } else {
+        return "https://via.placeholder.com/50x75";
+      }
+    },
+  },
+};
 </script>
 
 <style></style>

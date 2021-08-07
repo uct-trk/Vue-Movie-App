@@ -38,9 +38,9 @@
           </div>
           <div class="mt-5 text-black font-bold">
             <a
-              :href="youtubeVideo"
+              @click.prevent="openYoutubeModel"
               target="_blank"
-              class="rounded bg-yellow-500 px-5 py-4"
+              class="rounded bg-yellow-500 px-5 py-4 cursor-pointer"
             >
               <i class="far fa-play-circle mr-1"></i>
               Play Trailer
@@ -54,13 +54,15 @@
       </div>
     </div>
     <Cast />
-    <Images />
+    <Images v-on:on-image-click="showImageModel" />
+    <MediaModel v-model="modelOpen" :mediaURL="mediaURL" :isVideo="this.isVideo"/>
   </div>
 </template>
 
 <script>
 import Cast from "./Cast.vue";
 import Images from "./Images.vue";
+import MediaModel from "./model/MediaModel.vue";
 import axios from "axios";
 export default {
   name: "Movie",
@@ -69,11 +71,15 @@ export default {
       movie: [],
       crews: [],
       videos: [],
+      modelOpen: false,
+      isVideo: false,
+      mediaURL: "",
     };
   },
   components: {
     Cast,
     Images,
+    MediaModel,
   },
   mounted() {
     this.fetchMovie(this.$route.params.id);
@@ -105,13 +111,27 @@ export default {
         .then((response) => (this.videos = response.data.results[0]))
         .catch((err) => console.log(err));
     },
+    openYoutubeModel() {
+      this.modelOpen = true;
+      this.isVideo = true;
+      this.mediaURL = this.youtubeVideo();
+    },
+    openImageModel() {
+      this.modelOpen = true;
+      this.isVideo = false;
+    },
+    youtubeVideo() {
+      return "https://www.youtube.com/embed/" + this.videos?.key;
+    },
+    showImageModel(imageFullPath) {
+      this.modelOpen = true;
+      this.isVideo = false;
+      this.mediaURL = imageFullPath;
+    },
   },
   computed: {
     posterPath() {
       return "https://image.tmdb.org/t/p/w500" + this.movie.poster_path;
-    },
-    youtubeVideo() {
-      return "https://www.youtube.com/embed/" + this.videos?.key;
     },
   },
 };
