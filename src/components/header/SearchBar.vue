@@ -1,27 +1,31 @@
 <template>
   <div class="mt-5 flex relative">
     <input
+      ref="searchBox"
       type="text"
       class="rounded-full bg-gray-600 px-7 outline-none w-64 h-12 mb-5 mr-5"
       placeholder="Search.."
       @input="debounceSearch"
       v-model="searchTerm"
+      @focus="handleFocus"
     />
     <div class="absolute top-2 left-0">
       <i class="fas fa-search mt-3 ml-2 text-gray-300"></i>
     </div>
     <div class="absolute mt-14 ml-2 rounded bg-gray-600 w-60">
-      <ul v-if="searchResult.length != 1">
-        <li
-          v-for="(movie, index) in searchResult"
-          :key="index"
-          class="flex items-center border-b border-gray-500"
-        >
-          <img :src="posterPath(movie.poster_path)" alt="" class="w-10" />
-          <span class="ml-3">{{ movie.title }}</span>
+      <ul v-if="showSearchResult">
+        <li v-for="(movie, index) in searchResult" :key="index">
+          <router-link
+            :to="`/movie/${movie.id}`"
+            @click.native="showSearchResult = false"
+            class="flex items-center border-b border-gray-500"
+          >
+            <img :src="posterPath(movie.poster_path)" alt="" class="w-10" />
+            <span class="ml-3">{{ movie.title }}</span>
+          </router-link>
         </li>
       </ul>
-      <ul>
+      <ul v-else>
         <li v-if="noResultFound" class="text-center py-2 font-bold">
           No Result found for "{{ searchTerm }}"
         </li>
@@ -37,12 +41,13 @@ export default {
   data() {
     return {
       searchResult: [],
-      noResultFound: false,
       searchTerm: "",
+      showSearchResult: false,
     };
   },
   mounted() {
     this.fetchSearch();
+    this.keyboardEvents();
   },
   methods: {
     debounceSearch(event) {
@@ -60,7 +65,7 @@ export default {
         )
         .then((response) => (this.searchResult = response.data.results))
         .catch((err) => console.log(err));
-        this.noResultFound = this.searchResult ? true : false
+      this.showSearchResult = this.searchResult ? true : false;
 
       console.log(this.noResultFound);
       console.log(this.searchResult);
@@ -71,6 +76,31 @@ export default {
       } else {
         return "https://via.placeholder.com/50x75";
       }
+    },
+    handleFocus() {
+      if (this.searchTerm != "") {
+        this.showSearchResult = true;
+      }
+    },
+    keyboardEvents() {
+      let windowObj = this;
+
+      window.addEventListener("click", (e) => {
+        if (!this.$el.contains(e.target)) {
+          this.showSearchResult = false;
+        }
+      });
+      window.addEventListener("keypress", (e) => {
+        if (e.keyCode == "47") {
+          e.preventDefault();
+          windowObj.$refs.searchBox.focus();
+        }
+      });
+      window.addEventListener("keydown", (e) => {
+        if (e.key == "Escape") {
+          this.showSearchResult = false;
+        }
+      });
     },
   },
 };
