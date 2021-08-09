@@ -4,8 +4,9 @@ import router from './router'
 import "@/assets/css/styles.css"
 import App from './App.vue'
 import api from './services/api'
-
+import store from './store'
 import Carousel3d from 'vue-carousel-3d';
+
 
 Vue.use(Carousel3d);
 
@@ -15,5 +16,6 @@ Vue.use(VueRouter);
 
 new Vue({
   render: h => h(App),
-  router: router
+  router: router,
+  store
 }).$mount('#app')

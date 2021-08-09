@@ -15,7 +15,7 @@
         </router-link>
       </li>
       <li>
-        <router-link to="/profile" class="ml-5">
+        <router-link to="/profile" v-if="this.$store.getters.isUserLoggedIn" class="ml-5">
           Profile
         </router-link>
       </li>
@@ -24,7 +24,9 @@
 </template>
 
 <script>
-export default {};
+export default {
+
+};
 </script>
 
 <style></style>

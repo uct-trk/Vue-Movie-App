@@ -31,11 +31,12 @@
         </li>
       </ul>
     </div>
-    <img src="@/assets/profile.jpg" class="w-12 h-12 rounded-full" alt="" />
+    <AccontDropdown/>
   </div>
 </template>
 
 <script>
+import AccontDropdown from './AccountDropdown.vue'
 import axios from "axios";
 export default {
   data() {
@@ -44,6 +45,9 @@ export default {
       searchTerm: "",
       showSearchResult: false,
     };
+  },
+  components: {
+    AccontDropdown
   },
   mounted() {
     this.fetchSearch();

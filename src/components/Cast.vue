@@ -8,12 +8,14 @@
         class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
       >
         <div class="mr-2" v-for="(cast, index) in casts" :key="index">
+          <router-link :to="`/actor/${cast.id}`">
           <img
             :src="posterPath(cast)"
             alt=""
             class="hover:opacity-75 cursor-pointer transition ease-in-out duration-150"
           />
           <span class="text-gray-300">{{ cast.name }}</span>
+          </router-link>
         </div>
       </div>
     </div>
