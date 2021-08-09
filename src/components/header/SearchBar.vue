@@ -25,8 +25,8 @@
           </router-link>
         </li>
       </ul>
-      <ul v-else>
-        <li v-if="noResultFound" class="text-center py-2 font-bold">
+      <ul v-if="searchResult.length == 0 && showSearchResult">
+        <li class="text-center py-2 font-bold">
           No Result found for "{{ searchTerm }}"
         </li>
       </ul>
@@ -55,6 +55,8 @@ export default {
       this.debounce = setTimeout(() => {
         if (event.target.value.length > 2) {
           this.fetchSearch(event.target.value);
+        } else {
+          this.showSearchResult = false;
         }
       }, 600);
     },
@@ -66,6 +68,9 @@ export default {
         .then((response) => (this.searchResult = response.data.results))
         .catch((err) => console.log(err));
       this.showSearchResult = this.searchResult ? true : false;
+      if (this.searchTerm === "") {
+        this.searchResult = false;
+      }
 
       console.log(this.noResultFound);
       console.log(this.searchResult);

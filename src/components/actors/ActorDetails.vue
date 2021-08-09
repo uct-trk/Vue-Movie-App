@@ -168,6 +168,7 @@ export default {
       this.knownFor = this.castMovies.slice(
         Math.max(this.castMovies.length - 5, 1)
       );
+      console.log(this.knownFor);
     },
     async fetchSocial(actorId) {
       await axios

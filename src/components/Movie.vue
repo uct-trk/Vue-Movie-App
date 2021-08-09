@@ -55,7 +55,11 @@
     </div>
     <Cast />
     <Images v-on:on-image-click="showImageModel" />
-    <MediaModel v-model="modelOpen" :mediaURL="mediaURL" :isVideo="this.isVideo"/>
+    <MediaModel
+      v-model="modelOpen"
+      :mediaURL="mediaURL"
+      :isVideo="this.isVideo"
+    />
   </div>
 </template>
 
@@ -85,6 +89,13 @@ export default {
     this.fetchMovie(this.$route.params.id);
     this.creditMovie(this.$route.params.id);
     this.trailerMovie(this.$route.params.id);
+  },
+  watch: {
+    "$route.params.id": {
+      handler() {
+        this.fetchMovie(this.$route.params.id);
+      },
+    },
   },
   methods: {
     async fetchMovie(movieId) {
