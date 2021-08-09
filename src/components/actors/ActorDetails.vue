@@ -165,9 +165,9 @@ export default {
         )
         .then((res) => (this.castMovies = res.data.cast))
         .catch((err) => console.log(err));
-      this.knownFor = this.castMovies.slice(
-        Math.max(this.castMovies.length - 5, 1)
-      );
+      this.knownFor = this.castMovies
+        .filter((x) => x.media_type == "movie")
+        .slice(1, 6);
       console.log(this.knownFor);
     },
     async fetchSocial(actorId) {

@@ -5,6 +5,10 @@ import "@/assets/css/styles.css"
 import App from './App.vue'
 import api from './services/api'
 
+import Carousel3d from 'vue-carousel-3d';
+
+Vue.use(Carousel3d);
+
 Vue.prototype.$http = api;
 Vue.config.productionTip = false
 Vue.use(VueRouter);
